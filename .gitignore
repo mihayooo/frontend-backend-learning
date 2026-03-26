@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+target/
+build/
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# Docker volumes (data persistence)
+mall-tiny/mysql_data/
+mall-tiny/redis_data/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Compiled class files
+*.class
+
+# Package files
+*.zip
+*.tar.gz

@@ -1,0 +1,184 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_VERSION: '3.9.9'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # 2. 设置 JDK
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+
+    # 3. 构建后端项目
+    - name: Build mall-tiny
+      run: |
+        cd mall-tiny
+        mvn clean package -DskipTests -q
+        ls -la target/
+
+    # 4. 构建前端项目
+    - name: Build mall-admin-web
+      run: |
+        cd mall-admin-web
+        npm install
+        npm run build
+        ls -la dist/
+
+    # 5. 上传构建产物
+    - name: Upload backend artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mall-tiny-jar
+        path: mall-tiny/target/*.jar
+        retention-days: 7
+
+    - name: Upload frontend artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mall-admin-web-dist
+        path: mall-admin-web/dist/
+        retention-days: 7
+
+  docker-build:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download backend artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mall-tiny-jar
+        path: mall-tiny/target/
+
+    - name: Download frontend artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mall-admin-web-dist
+        path: mall-admin-web/dist/
+
+    # 6. 设置 Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # 7. 登录 Docker Hub（可选）
+    - name: Login to Docker Hub
+      if: env.DOCKERHUB_USERNAME != ''
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
+    # 8. 构建 Docker 镜像
+    - name: Build backend Docker image
+      run: |
+        cd mall-tiny
+        docker build -t mall-tiny:${{ github.sha }} -t mall-tiny:latest .
+        docker images | grep mall-tiny
+
+    - name: Build frontend Docker image
+      run: |
+        cd mall-admin-web
+        docker build -t mall-admin-web:${{ github.sha }} -t mall-admin-web:latest .
+        docker images | grep mall-admin-web
+
+  deploy-local:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to local server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          echo "=== Starting deployment ==="
+          cd d:/Projects/Claude/frontend_and_bankend_learning
+          
+          # 拉取最新代码
+          git pull origin master
+          
+          # 重新构建并部署
+          cd mall-tiny
+          docker build -t mall-tiny:latest .
+          
+          # 停止旧容器
+          docker stop mall-tiny-app 2>/dev/null || true
+          docker rm mall-tiny-app 2>/dev/null || true
+          
+          # 启动新容器
+          docker run -d \
+            --name mall-tiny-app \
+            --restart unless-stopped \
+            -p 8080:8080 \
+            --network mall-tiny_default \
+            -e SPRING_DATASOURCE_URL="jdbc:mysql://mall-tiny-mysql:3306/mall_tiny?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true" \
+            -e SPRING_DATASOURCE_USERNAME=root \
+            -e SPRING_DATASOURCE_PASSWORD=root \
+            -e SPRING_REDIS_HOST=mall-tiny-redis \
+            -e SPRING_REDIS_PORT=6379 \
+            mall-tiny:latest
+          
+          # 健康检查
+          sleep 30
+          curl -s http://localhost:8080/actuator/health || echo "Health check may need more time"
+          
+          echo "=== Deployment completed ==="
+
+  health-check:
+    needs: deploy-local
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Health check
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          echo "=== Health Check ==="
+          for i in {1..10}; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
+            if [ "$response" = "200" ]; then
+              echo "✅ Health check passed!"
+              curl -s http://localhost:8080/actuator/health
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $response, retrying in 10s..."
+            sleep 10
+          done
+          echo "❌ Health check failed after 10 attempts"
+          docker logs mall-tiny-app --tail 50
+          exit 1

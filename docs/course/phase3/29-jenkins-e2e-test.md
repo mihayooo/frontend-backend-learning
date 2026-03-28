@@ -1,4 +1,4 @@
-# 第13节：Jenkins CI/CD 端到端验证
+# 第29节：Jenkins CI/CD 端到端验证
 
 > 目标：完整验证 Jenkins CI/CD 流水线，从代码提交到应用部署的全流程测试。
 

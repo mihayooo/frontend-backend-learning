@@ -40,28 +40,68 @@
 | 08 | [认证流程解析](./phase1/08-security-flow.md) | Spring Security + JWT 认证机制 | ✅ 已验证 |
 | 09 | [Docker 容器化部署](./phase1/09-docker-deploy.md) | Docker + Docker Compose 一键部署（4容器全栈） | ✅ **实际部署验证** |
 
-### 第二阶段：核心功能扩展（规划中）
+### 第二阶段：核心功能扩展（16 节）
 
-- 商品模块开发
-- 订单模块开发
-- 营销模块开发
-- 缓存优化
-- 搜索功能
+| 节次 | 标题 | 内容概述 | 状态 |
+|-----|------|---------|------|
+| 10 | [商品模块 - 数据库设计](./phase2/10-database-design.md) | 商品分类、品牌、属性、SKU表设计 | ✅ 已完成 |
+| 11 | [商品分类管理](./phase2/11-product-category.md) | 无限级分类、树形结构查询 | ✅ 已完成 |
+| 12 | [商品品牌管理](./phase2/12-product-attribute.md) | 品牌CRUD、Logo上传 | ✅ 已完成 |
+| 13 | [商品属性管理](./phase2/13-product-publish.md) | 规格参数vs销售属性 | ✅ 已完成 |
+| 14 | [商品信息管理（上）](./phase2/14-sku-stock.md) | 商品基本信息、SKU设计 | ✅ 已完成 |
+| 15 | [商品信息管理（下）](./phase2/15-product-search.md) | 分页查询、动态筛选 | ✅ 已完成 |
+| 16 | [Vue 3 项目结构](./phase2/16-vue-project-structure.md) | 目录结构、路由配置、API封装 | ✅ 已完成 |
+| 17 | [Element Plus 组件](./phase2/17-element-plus-components.md) | 常用组件、表单验证 | ✅ 已完成 |
+| 18 | [商品分类页面](./phase2/18-product-category-page.md) | 树形表格、拖拽排序 | ✅ 已完成 |
+| 19 | [商品列表页面](./phase2/19-product-list-page.md) | 多条件搜索、批量操作 | ✅ 已完成 |
+| 20 | [商品发布页面](./phase2/20-product-publish-page.md) | 富文本编辑器、SKU选择器 | ✅ 已完成 |
+| 21 | [订单模块概述](./phase2/21-order-module-overview.md) | 订单状态、多条件搜索 | ✅ 已完成 |
+| 22 | [订单详情页面](./phase2/22-order-detail-page.md) | Steps步骤条、多对话框 | ✅ 已完成 |
+| 23 | [订单发货功能](./phase2/23-order-delivery.md) | Pinia Store、批量发货 | ✅ 已完成 |
+| 24 | [退货申请处理](./phase2/24-return-apply.md) | 状态标签、退款计算 | ✅ 已完成 |
+| 25 | [订单设置](./phase2/25-order-setting.md) | 表单验证、超时机制 | ✅ 已完成 |
 
 ### 第三阶段：部署运维（4节）
 
 | 节次 | 标题 | 内容概述 | 状态 |
 |-----|------|---------|------|
-| 10 | [Jenkins CI/CD（上）环境搭建](./phase3/10-jenkins-setup.md) | Jenkins + Gitea Docker部署、插件安装、网络配置 | ✅ 已验证 |
-| 11 | [Jenkins CI/CD（下）Pipeline流水线](./phase3/11-jenkins-pipeline.md) | 5阶段Pipeline：Checkout→Build→Docker Build→Deploy→Health Check | ✅ 已验证 |
-| 12 | [Jenkins CI/CD 常见问题](./phase3/12-jenkins-troubleshooting.md) | 构建过程中的坑与解决方案（插件、Java版本、数据库、网络等） | ✅ 已验证 |
-| 13 | [Jenkins CI/CD 端到端验证](./phase3/13-jenkins-e2e-test.md) | 完整验证流程、自动化测试脚本、故障排查速查 | ✅ 已验证 |
+| 26 | [Jenkins CI/CD（上）环境搭建](./phase3/26-jenkins-setup.md) | Jenkins + Gitea Docker部署、插件安装、网络配置 | ✅ 已验证 |
+| 27 | [Jenkins CI/CD（下）Pipeline流水线](./phase3/27-jenkins-pipeline.md) | 5阶段Pipeline：Checkout→Build→Docker Build→Deploy→Health Check | ✅ 已验证 |
+| 28 | [Jenkins CI/CD 常见问题](./phase3/28-jenkins-troubleshooting.md) | 构建过程中的坑与解决方案（插件、Java版本、数据库、网络等） | ✅ 已验证 |
+| 29 | [Jenkins CI/CD 端到端验证](./phase3/29-jenkins-e2e-test.md) | 完整验证流程、自动化测试脚本、故障排查速查 | ✅ 已验证 |
 
 ### 第四阶段：生产优化（规划中）
 
 - 生产环境配置优化
 - 监控与日志收集
 - 性能调优
+
+---
+
+## 🚀 学习路径
+
+### 初学者路线
+如果你是从零开始的初学者，建议按顺序学习：
+
+```
+第一阶段（9节）→ 第二阶段（16节）→ 第三阶段（4节）
+```
+
+**第一阶段目标**：跑通项目，理解整体架构
+**第二阶段目标**：掌握业务开发，能独立开发新功能
+**第三阶段目标**：掌握自动化部署，能搭建CI/CD环境
+
+### 有经验开发者
+如果你已有相关经验，可以按需学习：
+
+| 你的需求 | 推荐章节 |
+|---------|---------|
+| 快速了解项目 | 第05-06节 |
+| 学习Docker部署 | 第09节 |
+| 学习商品模块设计 | 第10-15节 |
+| 学习前端开发 | 第16-20节 |
+| 学习订单模块 | 第21-25节 |
+| 学习Jenkins CI/CD | 第26-29节 |
 
 ---
 

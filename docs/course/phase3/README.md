@@ -20,10 +20,10 @@
 
 | 节次 | 标题 | 预计时长 | 关键技能 |
 |------|------|----------|----------|
-| [10](./10-jenkins-setup.md) | Jenkins CI/CD（上）环境搭建 | 30-45 min | Docker Compose、Jenkins配置、Gitea部署 |
-| [11](./11-jenkins-pipeline.md) | Jenkins CI/CD（下）Pipeline流水线 | 40-60 min | Pipeline语法、Groovy脚本、自动化部署 |
-| [12](./12-jenkins-troubleshooting.md) | Jenkins CI/CD 常见问题 | 20-30 min | 问题排查、调试技巧、解决方案 |
-| [13](./13-jenkins-e2e-test.md) | Jenkins CI/CD 端到端验证 | 20-30 min | 全流程测试、自动化验证、故障排查 |
+| [26](./26-jenkins-setup.md) | Jenkins CI/CD（上）环境搭建 | 30-45 min | Docker Compose、Jenkins配置、Gitea部署 |
+| [27](./27-jenkins-pipeline.md) | Jenkins CI/CD（下）Pipeline流水线 | 40-60 min | Pipeline语法、Groovy脚本、自动化部署 |
+| [28](./28-jenkins-troubleshooting.md) | Jenkins CI/CD 常见问题 | 20-30 min | 问题排查、调试技巧、解决方案 |
+| [29](./29-jenkins-e2e-test.md) | Jenkins CI/CD 端到端验证 | 20-30 min | 全流程测试、自动化验证、故障排查 |
 
 ---
 
@@ -148,7 +148,7 @@ curl -X POST http://localhost:8080/admin/login \
 | 端口冲突 | 清理旧容器或修改端口 |
 | 网络不通 | 连接容器到同一Docker网络 |
 
-详细解决方案请参考 [第12节：常见问题](./12-jenkins-troubleshooting.md)
+详细解决方案请参考 [第28节：常见问题](./28-jenkins-troubleshooting.md)
 
 ---
 

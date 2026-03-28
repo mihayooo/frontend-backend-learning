@@ -1,4 +1,4 @@
-# 第10节：Jenkins CI/CD 自动化部署（上）环境搭建
+# 第26节：Jenkins CI/CD 自动化部署（上）环境搭建
 
 > 目标：搭建完整的 Jenkins + Gitea CI/CD 环境，实现代码提交后自动构建、打包、部署。
 

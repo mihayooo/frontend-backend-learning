@@ -1,81 +1,175 @@
-# 第三阶段：部署运维与生产优化
+# 第三阶段：部署运维
+
+> 掌握 CI/CD 自动化部署，实现从代码提交到应用部署的全流程自动化。
+
+---
 
 ## 阶段目标
 
-通过本阶段的学习，掌握以下技能：
-- 生产环境的配置与优化
-- CI/CD 自动化部署流程
-- Docker 生产环境部署
-- 日志收集与监控告警
-- 系统性能优化
+完成本阶段学习后，你将能够：
 
-## 课程大纲
+- ✅ 搭建 Jenkins + Gitea CI/CD 环境
+- ✅ 编写 Jenkins Pipeline 流水线
+- ✅ 实现自动化构建、打包、部署
+- ✅ 排查 CI/CD 过程中的常见问题
+- ✅ 验证端到端部署流程
 
-### 第26节：生产环境配置与优化
-- Spring Boot 生产环境配置
-- 数据库连接池优化
-- JVM 参数调优
-- 静态资源优化
-- Nginx 反向代理配置
+---
 
-### 第27节：Jenkins CI/CD 自动化部署
-- Jenkins 安装与基础配置（Docker 方式）
-- Pipeline 流水线编写（后端 + 前端）
-- Webhook 自动触发构建
-- Docker 镜像构建与部署
-- 部署通知（钉钉）与自动回滚
+## 课程列表
 
-### 第28节：Docker Compose生产环境部署
-- 生产环境 Docker 配置
-- 多服务编排与管理
-- 数据持久化与备份
-- 环境变量管理
-- SSL/HTTPS 配置
+| 节次 | 标题 | 预计时长 | 关键技能 |
+|------|------|----------|----------|
+| [10](./10-jenkins-setup.md) | Jenkins CI/CD（上）环境搭建 | 30-45 min | Docker Compose、Jenkins配置、Gitea部署 |
+| [11](./11-jenkins-pipeline.md) | Jenkins CI/CD（下）Pipeline流水线 | 40-60 min | Pipeline语法、Groovy脚本、自动化部署 |
+| [12](./12-jenkins-troubleshooting.md) | Jenkins CI/CD 常见问题 | 20-30 min | 问题排查、调试技巧、解决方案 |
+| [13](./13-jenkins-e2e-test.md) | Jenkins CI/CD 端到端验证 | 20-30 min | 全流程测试、自动化验证、故障排查 |
 
-### 第29节：日志收集与监控告警
-- 日志框架配置（Logback/Log4j2）
-- 日志分级与归档
-- ELK 日志收集系统
-- 应用监控（Spring Boot Actuator）
-- 告警通知配置
+---
 
-### 第30节：项目总结与后续学习路线
-- 项目架构回顾
-- 性能优化总结
-- 安全最佳实践
-- 扩展功能建议
-- 后续学习路线
+## 技术栈
 
-## 技术要点
+| 组件 | 技术 | 版本/说明 |
+|------|------|-----------|
+| CI/CD引擎 | Jenkins | LTS + JDK17 |
+| Git服务器 | Gitea | latest |
+| 构建工具 | Maven | 3.9.9 |
+| 容器化 | Docker + Docker Compose | 27.x |
+| 流水线 | Jenkins Pipeline | Declarative语法 |
 
-### 生产环境 checklist
-1. **安全配置**：关闭调试模式、配置HTTPS、设置安全头
-2. **性能优化**：数据库连接池、缓存策略、静态资源CDN
-3. **监控告警**：应用监控、日志收集、异常告警
-4. **备份策略**：数据库备份、配置文件备份
-5. **容灾方案**：多实例部署、负载均衡
+---
 
-### 核心技能
-| 技能 | 应用场景 |
-|:---|:---|
-| GitHub Actions | 自动化构建与部署 |
-| Docker Compose | 多服务编排管理 |
-| Nginx | 反向代理、负载均衡 |
-| ELK Stack | 日志收集与分析 |
-| Prometheus/Grafana | 应用监控与告警 |
+## 架构图
 
-## 预期成果
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         开发环境                                │
+│  ┌──────────────┐         ┌──────────────┐                     │
+│  │   IDEA       │ ──────> │  Gitea       │                     │
+│  │  (编码)      │  push   │  (Git仓库)   │                     │
+│  └──────────────┘         └──────┬───────┘                     │
+│                                  │                              │
+└──────────────────────────────────┼──────────────────────────────┘
+                                   │ webhook
+                                   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Jenkins (CI/CD引擎)                        │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  Pipeline: Checkout → Build → Docker Build → Deploy      │  │
+│  │  ├─ Checkout: 从Gitea拉取代码                             │  │
+│  │  ├─ Build: Maven编译打包                                  │  │
+│  │  ├─ Docker Build: 构建应用镜像                            │  │
+│  │  └─ Deploy: 部署到Docker容器                              │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────┬──────────────────────────────┘
+                                   │ docker run
+                                   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      运行环境（Docker）                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ mall-tiny-app│  │ mysql        │  │ redis        │          │
+│  │  (应用)      │  │ (数据库)     │  │ (缓存)       │          │
+│  │  port: 8080  │  │ port: 3306   │  │ port: 6379   │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-完成第三阶段后，你将拥有一个生产就绪的电商系统：
-- ✅ 生产环境优化配置
-- ✅ 自动化 CI/CD 流程
-- ✅ Docker 生产部署方案
-- ✅ 日志监控与告警系统
-- ✅ 完整的运维文档
+---
+
+## 前置条件
+
+在开始本阶段之前，请确保：
+
+1. 已完成 [第一阶段：mall-tiny 快速上手](../phase1/README.md)
+2. 已安装 Docker Desktop（Windows/Mac）或 Docker Engine（Linux）
+3. 了解基本的 Git 操作
+4. 系统内存建议 8GB+（同时运行多个容器）
+
+---
+
+## 服务端口规划
+
+| 服务 | 容器名 | 端口 | 说明 |
+|------|--------|------|------|
+| Jenkins | jenkins | 9090 | 避免与mall-tiny的8080冲突 |
+| Gitea | gitea | 3000/2222 | Git Web UI / SSH |
+| mall-tiny-app | mall-tiny-app | 8080 | 后端应用 |
+| MySQL | mall-tiny-mysql | 3307 | 数据库（宿主机映射） |
+| Redis | mall-tiny-redis | 6380 | 缓存（宿主机映射） |
+| 前端 | mall-admin-web | 80 | Nginx反向代理 |
+
+---
+
+## 快速开始
+
+### 1. 启动 CI/CD 环境
+
+```bash
+cd jenkins
+docker compose up -d --build
+```
+
+### 2. 初始化 Gitea
+
+1. 访问 http://localhost:3000
+2. 创建管理员账号
+3. 创建 mall-tiny 仓库
+4. 推送代码
+
+### 3. 配置 Jenkins
+
+1. 访问 http://localhost:9090
+2. 安装必要插件
+3. 创建 Pipeline Job
+4. 运行构建
+
+### 4. 验证部署
+
+```bash
+# 健康检查
+curl http://localhost:8080/actuator/health
+
+# 登录测试
+curl -X POST http://localhost:8080/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"macro123"}'
+```
+
+---
+
+## 常见问题速查
+
+| 问题 | 快速解决 |
+|------|----------|
+| 插件下载失败 | 更换清华镜像源 |
+| docker: not found | 自定义Jenkins镜像安装Docker CLI |
+| Java版本不匹配 | 统一使用JDK/JRE 17 |
+| 数据库连接失败 | 检查数据库名是否为mall_tiny |
+| 端口冲突 | 清理旧容器或修改端口 |
+| 网络不通 | 连接容器到同一Docker网络 |
+
+详细解决方案请参考 [第12节：常见问题](./12-jenkins-troubleshooting.md)
+
+---
 
 ## 参考资源
 
-- [Spring Boot 生产环境配置](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html)
-- [GitHub Actions 文档](https://docs.github.com/en/actions)
-- [Docker Compose 官方文档](https://docs.docker.com/compose/)
-- [Nginx 配置指南](https://nginx.org/en/docs/)
+- [Jenkins 官方文档](https://www.jenkins.io/doc/)
+- [Jenkins Pipeline 语法](https://www.jenkins.io/doc/book/pipeline/syntax/)
+- [Gitea 官方文档](https://docs.gitea.io/)
+- [Docker Compose 参考](https://docs.docker.com/compose/)
+
+---
+
+## 下一步
+
+完成本阶段后，你可以继续学习：
+
+- **第四阶段：生产优化**（规划中）
+  - 生产环境配置优化
+  - 监控与日志收集（ELK/Prometheus）
+  - 性能调优
+
+或者返回查看其他阶段：
+- [第一阶段：mall-tiny 快速上手](../phase1/README.md)
+- [第二阶段：核心功能扩展](../phase2/README.md)

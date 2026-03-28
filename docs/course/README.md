@@ -48,11 +48,20 @@
 - 缓存优化
 - 搜索功能
 
-### 第三阶段：部署运维（规划中）
+### 第三阶段：部署运维（4节）
 
-- CI/CD 自动化部署（Jenkins / GitHub Actions）
-- 生产环境优化
-- 监控与日志
+| 节次 | 标题 | 内容概述 | 状态 |
+|-----|------|---------|------|
+| 10 | [Jenkins CI/CD（上）环境搭建](./phase3/10-jenkins-setup.md) | Jenkins + Gitea Docker部署、插件安装、网络配置 | ✅ 已验证 |
+| 11 | [Jenkins CI/CD（下）Pipeline流水线](./phase3/11-jenkins-pipeline.md) | 5阶段Pipeline：Checkout→Build→Docker Build→Deploy→Health Check | ✅ 已验证 |
+| 12 | [Jenkins CI/CD 常见问题](./phase3/12-jenkins-troubleshooting.md) | 构建过程中的坑与解决方案（插件、Java版本、数据库、网络等） | ✅ 已验证 |
+| 13 | [Jenkins CI/CD 端到端验证](./phase3/13-jenkins-e2e-test.md) | 完整验证流程、自动化测试脚本、故障排查速查 | ✅ 已验证 |
+
+### 第四阶段：生产优化（规划中）
+
+- 生产环境配置优化
+- 监控与日志收集
+- 性能调优
 
 ---
 

@@ -18,12 +18,12 @@
 - 静态资源优化
 - Nginx 反向代理配置
 
-### 第27节：GitHub Actions CI/CD自动化部署
-- GitHub Actions 工作流配置
-- 自动化测试与构建
-- Docker 镜像自动构建与推送
-- 自动化部署到服务器
-- 部署通知与回滚
+### 第27节：Jenkins CI/CD 自动化部署
+- Jenkins 安装与基础配置（Docker 方式）
+- Pipeline 流水线编写（后端 + 前端）
+- Webhook 自动触发构建
+- Docker 镜像构建与部署
+- 部署通知（钉钉）与自动回滚
 
 ### 第28节：Docker Compose生产环境部署
 - 生产环境 Docker 配置

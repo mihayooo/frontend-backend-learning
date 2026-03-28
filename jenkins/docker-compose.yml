@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jenkins-custom:latest
+    container_name: jenkins
+    restart: unless-stopped
+    privileged: true
+    user: root
+    ports:
+      - "9090:8080"      # Jenkins Web UI (用9090避免与mall-tiny的8080冲突)
+      - "50000:50000"    # Jenkins Agent 通信端口
+    volumes:
+      - jenkins_home:/var/jenkins_home          # Jenkins数据持久化
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker socket (works on Windows Docker Desktop)
+      - maven_cache:/root/.m2                   # Maven依赖缓存
+      - ./maven-settings.xml:/root/.m2/settings.xml:ro  # Maven阿里云镜像配置
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Xmx1g -Xms512m
+      - TZ=Asia/Shanghai
+    networks:
+      - jenkins_net
+
+  # Gitea - 轻量级本地Git服务器（替代GitHub，完全免费，支持Webhook）
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    ports:
+      - "3000:3000"    # Gitea Web UI
+      - "2222:22"      # Git SSH
+    volumes:
+      - gitea_data:/data
+    environment:
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__ROOT_URL=http://localhost:3000
+      - TZ=Asia/Shanghai
+    networks:
+      - jenkins_net
+
+volumes:
+  jenkins_home:
+    name: jenkins_home
+  maven_cache:
+    name: maven_cache
+  gitea_data:
+    name: gitea_data
+
+networks:
+  jenkins_net:
+    name: jenkins_net

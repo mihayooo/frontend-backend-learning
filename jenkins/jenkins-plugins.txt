@@ -1,0 +1,37 @@
+# Jenkins 必装插件列表
+# 用于 mall-tiny CI/CD 流水线
+
+# 流水线核心
+workflow-aggregator          # Pipeline 套件
+pipeline-stage-view          # 流水线阶段视图（漂亮的流水线可视化）
+pipeline-utility-steps       # 工具步骤（readJSON, readYaml等）
+
+# Git 集成
+git                          # Git 插件
+gitea                        # Gitea Webhook 触发
+generic-webhook-trigger      # 通用Webhook触发（支持自定义规则）
+
+# Docker 集成
+docker-workflow              # Pipeline中使用Docker
+docker-plugin                # Docker Cloud（动态Agent）
+
+# Maven 集成
+maven-plugin                 # Maven构建支持
+
+# 通知
+dingtalk                     # 钉钉机器人通知（可选）
+
+# 界面增强
+blueocean                    # Blue Ocean 现代化UI
+ansicolor                    # 控制台颜色输出
+timestamper                  # 日志时间戳
+
+# 凭据管理
+credentials-binding          # 在Pipeline中使用凭据
+ssh-credentials              # SSH密钥凭据
+
+# 参数化构建
+extended-choice-parameter    # 扩展选择参数
+
+# 构建工具
+nodejs                       # Node.js 构建支持（前端项目）

@@ -1,0 +1,6 @@
+[submodule "mall-admin-web"]
+	path = mall-admin-web
+	url = https://github.com/macrozheng/mall-admin-web.git
+[submodule "mall-tiny"]
+	path = mall-tiny
+	url = https://github.com/macrozheng/mall-tiny.git

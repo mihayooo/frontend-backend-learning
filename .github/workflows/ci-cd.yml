@@ -84,17 +84,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # 下载编译产物到 docker 构建上下文
     - name: Download backend artifact
       uses: actions/download-artifact@v4
       with:
         name: mall-tiny-jar
-        path: mall-tiny/target/
+        path: docker/mall-tiny/target/
 
     - name: Download frontend artifact
       uses: actions/download-artifact@v4
       with:
         name: mall-admin-web-dist
-        path: mall-admin-web/dist/
+        path: docker/mall-admin-web/dist/
 
     # 6. 设置 Docker Buildx
     - name: Set up Docker Buildx
@@ -110,17 +111,19 @@ jobs:
       env:
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
-    # 8. 构建 Docker 镜像
+    # 8. 构建 Docker 镜像（使用主仓库 docker/ 目录中的 Dockerfile，避免依赖 submodule）
     - name: Build backend Docker image
       run: |
-        cd mall-tiny
-        docker build -t mall-tiny:${{ github.sha }} -t mall-tiny:latest .
+        echo "=== Building mall-tiny ==="
+        ls -la docker/mall-tiny/target/
+        docker build -t mall-tiny:${{ github.sha }} -t mall-tiny:latest docker/mall-tiny/
         docker images | grep mall-tiny
 
     - name: Build frontend Docker image
       run: |
-        cd mall-admin-web
-        docker build -t mall-admin-web:${{ github.sha }} -t mall-admin-web:latest .
+        echo "=== Building mall-admin-web ==="
+        ls -la docker/mall-admin-web/dist/
+        docker build -t mall-admin-web:${{ github.sha }} -t mall-admin-web:latest docker/mall-admin-web/
         docker images | grep mall-admin-web
 
   deploy-local:

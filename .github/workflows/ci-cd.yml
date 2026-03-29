@@ -139,39 +139,31 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
+        # 指定使用 PowerShell（Windows 默认）
+        script_stop: true
         script: |
-          echo "=== Starting deployment ==="
-          cd d:/Projects/Claude/frontend_and_bankend_learning
+          Write-Host "=== Starting deployment ==="
+          cd "D:\Projects\Claude\frontend_and_bankend_learning"
           
           # 拉取最新代码
           git pull origin master
           
           # 重新构建并部署
-          cd mall-tiny
+          cd "mall-tiny"
           docker build -t mall-tiny:latest .
           
-          # 停止旧容器
-          docker stop mall-tiny-app 2>/dev/null || true
-          docker rm mall-tiny-app 2>/dev/null || true
+          # 停止旧容器（PowerShell 语法）
+          docker stop mall-tiny-app 2>$null
+          docker rm mall-tiny-app 2>$null
           
-          # 启动新容器
-          docker run -d \
-            --name mall-tiny-app \
-            --restart unless-stopped \
-            -p 8080:8080 \
-            --network mall-tiny_default \
-            -e SPRING_DATASOURCE_URL="jdbc:mysql://mall-tiny-mysql:3306/mall_tiny?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true" \
-            -e SPRING_DATASOURCE_USERNAME=root \
-            -e SPRING_DATASOURCE_PASSWORD=root \
-            -e SPRING_REDIS_HOST=mall-tiny-redis \
-            -e SPRING_REDIS_PORT=6379 \
-            mall-tiny:latest
+          # 启动新容器（单行，避免换行符问题）
+          docker run -d --name mall-tiny-app --restart unless-stopped -p 8080:8080 --network mall-tiny_default -e SPRING_DATASOURCE_URL="jdbc:mysql://mall-tiny-mysql:3306/mall_tiny?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true" -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=root -e SPRING_REDIS_HOST=mall-tiny-redis -e SPRING_REDIS_PORT=6379 mall-tiny:latest
           
           # 健康检查
-          sleep 30
-          curl -s http://localhost:8080/actuator/health || echo "Health check may need more time"
+          Start-Sleep -Seconds 30
+          try { Invoke-RestMethod -Uri "http://localhost:8080/actuator/health" -TimeoutSec 10 } catch { Write-Host "Health check may need more time" }
           
-          echo "=== Deployment completed ==="
+          Write-Host "=== Deployment completed ==="
 
   health-check:
     needs: deploy-local

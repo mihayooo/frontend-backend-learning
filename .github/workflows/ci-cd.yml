@@ -15,13 +15,27 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. 检出代码
+    # 1. 检出主仓库代码（不自动拉 submodule，避免本地改动 commit 不存在于上游）
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
-    # 2. 设置 JDK
+    # 2. 独立 clone 上游 mall-tiny（始终使用公开的 master 分支）
+    - name: Clone mall-tiny from upstream
+      run: |
+        rm -rf mall-tiny
+        git clone --depth=1 https://github.com/macrozheng/mall-tiny.git mall-tiny
+        echo "mall-tiny cloned, latest commit:"
+        git -C mall-tiny log --oneline -1
+
+    # 3. 独立 clone 上游 mall-admin-web
+    - name: Clone mall-admin-web from upstream
+      run: |
+        rm -rf mall-admin-web
+        git clone --depth=1 https://github.com/macrozheng/mall-admin-web.git mall-admin-web
+        echo "mall-admin-web cloned, latest commit:"
+        git -C mall-admin-web log --oneline -1
+
+    # 4. 设置 JDK
     - name: Set up JDK ${{ env.JAVA_VERSION }}
       uses: actions/setup-java@v4
       with:
@@ -29,19 +43,21 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # 3. 构建后端项目
+    # 5. 构建后端项目
     - name: Build mall-tiny
       run: |
         cd mall-tiny
         mvn clean package -DskipTests -q
-        ls -la target/
+        echo "Build output:"
+        ls -la target/*.jar
 
-    # 4. 构建前端项目
+    # 6. 构建前端项目
     - name: Build mall-admin-web
       run: |
         cd mall-admin-web
         npm install
         npm run build
+        echo "Frontend build output:"
         ls -la dist/
 
     # 5. 上传构建产物

@@ -61,7 +61,9 @@
 | 24 | [退货申请处理](./phase2/24-return-apply.md) | 状态标签、退款计算 | ✅ 已完成 |
 | 25 | [订单设置](./phase2/25-order-setting.md) | 表单验证、超时机制 | ✅ 已完成 |
 
-### 第三阶段：部署运维（4节）
+### 第三阶段：部署运维（8节）
+
+#### 方案一：Jenkins（自托管）
 
 | 节次 | 标题 | 内容概述 | 状态 |
 |-----|------|---------|------|
@@ -69,6 +71,15 @@
 | 27 | [Jenkins CI/CD（下）Pipeline流水线](./phase3/27-jenkins-pipeline.md) | 5阶段Pipeline：Checkout→Build→Docker Build→Deploy→Health Check | ✅ 已验证 |
 | 28 | [Jenkins CI/CD 常见问题](./phase3/28-jenkins-troubleshooting.md) | 构建过程中的坑与解决方案（插件、Java版本、数据库、网络等） | ✅ 已验证 |
 | 29 | [Jenkins CI/CD 端到端验证](./phase3/29-jenkins-e2e-test.md) | 完整验证流程、自动化测试脚本、故障排查速查 | ✅ 已验证 |
+
+#### 方案二：GitHub Actions（云端）
+
+| 节次 | 标题 | 内容概述 | 状态 |
+|-----|------|---------|------|
+| 30 | [GitHub Actions（上）环境搭建](./phase3/30-github-actions-setup.md) | GitHub Secrets配置、SSH服务、Workflow触发机制 | ✅ 已完成 |
+| 31 | [GitHub Actions（下）Workflow配置](./phase3/31-github-actions-workflow.md) | 4个Job设计、缓存优化、Docker构建 | ✅ 已完成 |
+| 32 | [GitHub Actions 常见问题](./phase3/32-github-actions-troubleshooting.md) | SSH连接失败、Maven超时、健康检查失败等解决方案 | ✅ 已完成 |
+| 33 | [GitHub Actions 端到端验证](./phase3/33-github-actions-e2e-test.md) | 全流程验证：Secrets配置→Push触发→部署→健康检查 | ✅ 已完成 |
 
 ### 第四阶段：生产优化（规划中）
 
@@ -84,12 +95,14 @@
 如果你是从零开始的初学者，建议按顺序学习：
 
 ```
-第一阶段（9节）→ 第二阶段（16节）→ 第三阶段（4节）
+第一阶段（9节）→ 第二阶段（16节）→ 第三阶段（8节）
 ```
 
 **第一阶段目标**：跑通项目，理解整体架构
 **第二阶段目标**：掌握业务开发，能独立开发新功能
 **第三阶段目标**：掌握自动化部署，能搭建CI/CD环境
+
+> 💡 第三阶段提供两种方案：Jenkins（26-29节）适合企业内网，GitHub Actions（30-33节）适合开源项目，按需选择其中一种即可。
 
 ### 有经验开发者
 如果你已有相关经验，可以按需学习：
@@ -102,6 +115,7 @@
 | 学习前端开发 | 第16-20节 |
 | 学习订单模块 | 第21-25节 |
 | 学习Jenkins CI/CD | 第26-29节 |
+| 学习GitHub Actions CI/CD | 第30-33节 |
 
 ---
 

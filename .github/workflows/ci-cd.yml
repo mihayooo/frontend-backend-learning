@@ -126,70 +126,23 @@ jobs:
         docker build -t mall-admin-web:${{ github.sha }} -t mall-admin-web:latest docker/mall-admin-web/
         docker images | grep mall-admin-web
 
-  deploy-local:
-    needs: docker-build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Deploy to local server via SSH
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        port: ${{ secrets.SSH_PORT }}
-        # 指定使用 PowerShell（Windows 默认）
-        script_stop: true
-        script: |
-          Write-Host "=== Starting deployment ==="
-          cd "D:\Projects\Claude\frontend_and_bankend_learning"
-          
-          # 拉取最新代码
-          git pull origin master
-          
-          # 重新构建并部署
-          cd "mall-tiny"
-          docker build -t mall-tiny:latest .
-          
-          # 停止旧容器（PowerShell 语法）
-          docker stop mall-tiny-app 2>$null
-          docker rm mall-tiny-app 2>$null
-          
-          # 启动新容器（单行，避免换行符问题）
-          docker run -d --name mall-tiny-app --restart unless-stopped -p 8080:8080 --network mall-tiny_default -e SPRING_DATASOURCE_URL="jdbc:mysql://mall-tiny-mysql:3306/mall_tiny?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true" -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=root -e SPRING_REDIS_HOST=mall-tiny-redis -e SPRING_REDIS_PORT=6379 mall-tiny:latest
-          
-          # 健康检查
-          Start-Sleep -Seconds 30
-          try { Invoke-RestMethod -Uri "http://localhost:8080/actuator/health" -TimeoutSec 10 } catch { Write-Host "Health check may need more time" }
-          
-          Write-Host "=== Deployment completed ==="
-
-  health-check:
-    needs: deploy-local
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Health check
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        port: ${{ secrets.SSH_PORT }}
-        script: |
-          echo "=== Health Check ==="
-          for i in {1..10}; do
-            response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
-            if [ "$response" = "200" ]; then
-              echo "✅ Health check passed!"
-              curl -s http://localhost:8080/actuator/health
-              exit 0
-            fi
-            echo "Attempt $i: HTTP $response, retrying in 10s..."
-            sleep 10
-          done
-          echo "❌ Health check failed after 10 attempts"
-          docker logs mall-tiny-app --tail 50
-          exit 1
+  # 注意：本地部署由 Jenkins 负责，GitHub Actions 只负责构建镜像
+  # 如需启用 GitHub Actions 部署，取消下面的注释并配置 Secrets
+  #
+  # deploy-local:
+  #   needs: docker-build
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+  #   
+  #   steps:
+  #   - name: Deploy to local server via SSH
+  #     uses: appleboy/ssh-action@v1.0.0
+  #     with:
+  #       host: ${{ secrets.SSH_HOST }}
+  #       username: ${{ secrets.SSH_USERNAME }}
+  #       password: ${{ secrets.SSH_PASSWORD }}
+  #       port: ${{ secrets.SSH_PORT }}
+  #       script: |
+  #         cd "D:\Projects\Claude\frontend_and_bankend_learning"
+  #         git pull origin master
+  #         docker-compose -f docker-compose-dev.yml up -d --build
